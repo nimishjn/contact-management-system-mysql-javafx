@@ -3,11 +3,16 @@ package controllers;
 import app.Alerts;
 import app.ChangeView;
 import app.Database;
+import app.UserSession;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
@@ -23,12 +28,16 @@ public class AddContactController implements Initializable {
     private TextField contactNameTf, contactNumberTf;
     @FXML
     private Button okBtn;
-
-
+    @FXML
+    private ComboBox<String> contactExtensionTf;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("This is AddContactController");
+        System.out.println("AddContactController Initialized.");
+
+        ObservableList<String> codes = FXCollections.observableArrayList("+91","+1","+44","+20","+971","+46");
+        contactExtensionTf.getItems().addAll(codes);
+        contactExtensionTf.setValue("+91");
     }
 
     // clear name and number fields
@@ -41,27 +50,29 @@ public class AddContactController implements Initializable {
 
         String contactName = contactNameTf.getText();
         String contactNumber = contactNumberTf.getText();
+        String countryCode = contactExtensionTf.getValue();
+        String username = UserSession.getUserName();
 
-        if (!(contactName.equals("")) && !(contactNumber.equals(""))) {
+        if (!(contactName.equals("") || contactNumber.equals(""))) {
 
             // stop execution if number is not valid
             if (!(validateNumber(contactNumber))) {
 
                 Alerts alert = new Alerts();
                 alert.showNumberNotValid();
-                System.out.println("Number not valid");
-                clearFields();
+                System.out.println("AddContactController: Number not valid.");
                 return;
             }
 
             Database db = new Database();
             Connection conn = db.getConnection();
 
-            String query = "INSERT INTO contacts VALUES (?, ?)";
+            String query = "INSERT INTO contacts VALUES (?, ?, ?)";
 
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, contactName);
-            ps.setString(2, contactNumber);
+            ps.setString(2, countryCode + " " + contactNumber);
+            ps.setString(3, username);
 
             int rowsAffected = ps.executeUpdate();
 
@@ -69,51 +80,25 @@ public class AddContactController implements Initializable {
             conn.close();
 
             if (rowsAffected == 1) {
-                System.out.println(contactName + " added to database");
+                System.out.println("AddContactController: " + contactName + " added to database for " + username);
             }
         }
         clearFields();
     }
 
     /*
-     * The below method;
-     *
-     * Checks whether the number of digits of the contact's number is 10, and no more or no less
-     *
-     * And also prevents SQL 'Data Truncation Error' from occurring due to entering a larger value than the maximum an int
-     * can hold.
-     *
-     * This is done because in the 'contacts' table which is the table to hold every contacts' number in its number column
-     * the data type given to it is 'int'
-     *
-     * So we should give it a value less than or equal to (2^31 - 1), but greater than 0 which is the max value an int can hold
-     *
-     * Thus, preventing 'Data Truncation Error'
-     *
-     * ----    method is used in 'EditContactController' too
+     * The below method checks if all the characters in number
+     * are digits, and number of digits are 10 following the
+     * Indian standards.
      */
     public boolean validateNumber(String number) {
 
-        int MAX_NUMBER = (int) (Math.pow(2, 31) - 1);
-
-        double contactNumber = Double.parseDouble(number);
-
-        /*
-         * number should not be more than (2^31 - 1) or a negative number
-         */
-        if ((contactNumber > MAX_NUMBER) || (contactNumber < 0)) {
-            return false;
-        }
-
         if (number.length() == 10) {
-
             String regex = "[0-9]+";
             Pattern onlyDigits = Pattern.compile(regex);
             Matcher matcher = onlyDigits.matcher(number);
             return matcher.matches();
-
         } else {
-
             return false;
         }
     }

@@ -25,27 +25,41 @@ public class SignUpController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("This is SignUpController");
+        System.out.println("SignUpController initialized.");
     }
 
-    // back to 'LogIn' view
+    // Render Login View
     public void backToLoginView() throws IOException {
         ChangeView switchToView = new ChangeView(backBtn);
         switchToView.changeView("LogIn");
     }
 
-    // clear userName TextField, password and re-typePassword PasswordFields
+    // Clear Username, Password and Re-type password
     public void clearAllFields() {
         usernameTf.clear();
         passwordPf.clear();
         reTypePasswordPf.clear();
     }
 
-    // check whether fields[username, password] are not empty
-    public boolean completedFields() { return ((!usernameTf.getText().equals("")) && (!passwordPf.getText().equals("")) && (!reTypePasswordPf.getText().equals(""))); }
+    // Check if Username, Password and Re-type password are not empty
+    public boolean completedFields() {
+        if (usernameTf.getText().equals("") || passwordPf.getText().equals("") || reTypePasswordPf.getText().equals("")) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
 
     // check whether passwords match
-    public boolean passwordMatches() { return passwordPf.getText().equals(reTypePasswordPf.getText()) && passwordPf.getText() != null && reTypePasswordPf.getText()!=null; }
+    public boolean passwordMatches() {
+        if(passwordPf.getText().equals(reTypePasswordPf.getText()) && passwordPf.getText() != null && reTypePasswordPf.getText()!=null) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 
     // sign up a new user
     public void signUp() throws SQLException, IOException {
@@ -56,21 +70,19 @@ public class SignUpController implements Initializable {
 
             addUserToDatabase();
             alert.showSignUpSuccessfulMessage();
-            System.out.println(usernameTf.getText() + "'s sign up is successful");
+            System.out.println("Sign Up successful for " + usernameTf.getText() + ".");
             backToLoginView();
-
-        } else {
-
-            if (!completedFields()) {
-                alert.showInsufficientInformationMessage();
-            } else {
-                alert.showPasswordsDoesNotMatch();
-            }
+        }
+        else if (!completedFields()) {
+            alert.showInsufficientInformationMessage();
+        }
+        else {
+            alert.showPasswordsDoesNotMatch();
         }
         clearAllFields();
     }
 
-    // add the new user to the database
+    // Adding user to the database
     public void addUserToDatabase() throws SQLException {
 
         Database db = new Database();
@@ -85,7 +97,7 @@ public class SignUpController implements Initializable {
 
         int rowsAffected = ps.executeUpdate();
 
-        System.out.println("rows affected = " + rowsAffected);
+        System.out.println("MySQL: Rows affected = " + rowsAffected);
 
         ps.close();
         conn.close();

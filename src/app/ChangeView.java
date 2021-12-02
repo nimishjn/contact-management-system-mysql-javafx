@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class ChangeView {
 
@@ -21,16 +22,15 @@ public class ChangeView {
     }
 
     public void changeView(String toView) throws IOException {
-
         try {
-
-            Parent root = FXMLLoader.load(getClass().getResource("../scenes/" + toView + ".fxml"));
+            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../scenes/" + toView + ".fxml")));
             Stage window = (Stage) this.node.getScene().getWindow();
             Scene scene = new Scene(root, 900, 700);
             window.setScene(scene);
             window.show();
             window.setResizable(false);
         } catch (Exception e) {
+            System.err.println("Error occurred in ChangeView()");
             e.printStackTrace();
         }
     }

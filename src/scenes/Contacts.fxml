@@ -1,44 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="700.0" prefWidth="900.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ContactsController">
+<AnchorPane prefHeight="700.0" prefWidth="900.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ContactsController">
    <children>
-      <ListView fx:id="contactList" layoutX="100.0" layoutY="79.0" prefHeight="597.0" prefWidth="271.0" style="-fx-background-color: #d3d3d3;" />
-      <Label layoutX="100.0" layoutY="14.0" style="-fx-underline: true;" text="Name List          ">
+      <ListView fx:id="contactList" layoutX="100.0" layoutY="111.0" prefHeight="565.0" prefWidth="287.0" style="-fx-background-color: #d3d3d3;" />
+      <Label alignment="CENTER" layoutX="100.0" layoutY="27.0" prefHeight="52.0" prefWidth="287.0" text="Contact List">
          <font>
-            <Font name="System Bold Italic" size="36.0" />
+            <Font name="System Bold" size="24.0" />
          </font>
       </Label>
-      <Label fx:id="contactNameLabel" layoutX="590.0" layoutY="297.0" prefHeight="53.0" prefWidth="305.0" text="-">
+      <Button fx:id="editBtn" layoutX="13.0" layoutY="117.0" mnemonicParsing="false" onAction="#sendInfoToEditController" prefHeight="30.0" prefWidth="74.0" style="-fx-background-color: blue;" text="Edit" textFill="WHITE">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
          <font>
-            <Font name="System Bold" size="36.0" />
+            <Font size="14.0" />
+         </font></Button>
+      <Button fx:id="addBtn" layoutX="12.0" layoutY="79.0" mnemonicParsing="false" onAction="#changeViewToAddContact" prefHeight="30.0" prefWidth="74.0" style="-fx-background-color: blue;" text="Add" textFill="WHITE">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+         <font>
+            <Font size="14.0" />
+         </font></Button>
+      <Button fx:id="deleteBtn" layoutX="13.0" layoutY="155.0" mnemonicParsing="false" onAction="#deleteContact" prefHeight="30.0" prefWidth="74.0" style="-fx-background-color: red;" text="Delete" textFill="WHITE">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+         <font>
+            <Font size="14.0" />
+         </font></Button>
+      <Button fx:id="signOutBtn" layoutX="772.0" layoutY="55.0" mnemonicParsing="false" onAction="#signOut" prefHeight="30.0" prefWidth="101.0" style="-fx-background-color: red;" text="Sign Out" textFill="WHITE">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+         <font>
+            <Font size="14.0" />
+         </font></Button>
+      <Button fx:id="clearAllBtn" layoutX="13.0" layoutY="193.0" mnemonicParsing="false" onAction="#clearAllContacts" style="-fx-background-color: red;" text="Clear All" textFill="WHITE">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+         <font>
+            <Font size="14.0" />
+         </font></Button>
+      <Button fx:id="changePasswordBtn" layoutX="745.0" layoutY="648.0" mnemonicParsing="false" onAction="#moveToChangePasswordView" style="-fx-background-color: blue;" text="Change Password" textFill="WHITE">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+         <font>
+            <Font size="14.0" />
+         </font></Button>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="402.0" layoutX="420.0" layoutY="149.0" stroke="BLACK" strokeType="INSIDE" width="374.0" />
+      <Label fx:id="contactNameLabel" alignment="CENTER" layoutX="420.0" layoutY="369.0" prefHeight="25.0" prefWidth="374.0" text="N/A" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="26.0" />
          </font>
       </Label>
-      <Label fx:id="contactNumberLabel" layoutX="589.0" layoutY="378.0" prefHeight="53.0" prefWidth="311.0" text="-">
+      <Label fx:id="contactNumberLabel" alignment="CENTER" layoutX="420.0" layoutY="451.0" prefHeight="15.0" prefWidth="374.0" text="N/A" textFill="WHITE">
          <font>
-            <Font name="System Bold" size="36.0" />
+            <Font name="System Bold" size="26.0" />
          </font>
       </Label>
-      <Button fx:id="editBtn" layoutX="15.0" layoutY="117.0" mnemonicParsing="false" onAction="#sendInfoToEditController" text="Edit" />
-      <Button fx:id="addBtn" layoutX="14.0" layoutY="79.0" mnemonicParsing="false" onAction="#changeViewToAddContact" text="Add" />
-      <Button fx:id="deleteBtn" layoutX="15.0" layoutY="155.0" mnemonicParsing="false" onAction="#deleteContact" text="Delete" />
-      <Button fx:id="signOutBtn" layoutX="7.0" layoutY="645.0" mnemonicParsing="false" onAction="#signOut" text="Sign Out" />
-      <Button fx:id="clearAllBtn" layoutX="15.0" layoutY="193.0" mnemonicParsing="false" onAction="#clearAllContacts" text="Clear All" />
-      <Label layoutX="410.0" layoutY="378.0" text="Number :">
+      <Label alignment="CENTER" layoutX="421.0" layoutY="426.0" prefHeight="13.0" prefWidth="374.0" text="Number" textFill="#dadada">
          <font>
-            <Font name="System Bold" size="36.0" />
+            <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <Label layoutX="410.0" layoutY="297.0" prefHeight="53.0" prefWidth="168.0" text="Name     :">
+      <Label alignment="CENTER" layoutX="421.0" layoutY="342.0" prefHeight="28.0" prefWidth="374.0" text="Name" textFill="#dadada">
          <font>
-            <Font name="System Bold" size="36.0" />
+            <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <Button fx:id="changePasswordBtn" layoutX="748.0" layoutY="645.0" mnemonicParsing="false" onAction="#moveToChangePasswordView" text="Change Password" />
+      <Label fx:id="usernameLabel" alignment="CENTER_RIGHT" layoutX="586.0" layoutY="27.0" prefHeight="28.0" prefWidth="287.0" text="Hello, ">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <ImageView fx:id="contactUrlLink" fitHeight="150.0" fitWidth="200.0" layoutX="532.0" layoutY="170.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/profile.png" />
+         </image>
+      </ImageView>
+      <TextField fx:id="ContactSearchText" layoutX="100.0" layoutY="80.0" prefHeight="28.0" prefWidth="218.0" promptText="Rosa Diaz" />
+      <Button fx:id="ContactSearchBtn" layoutX="321.0" layoutY="80.0" mnemonicParsing="false" onAction="#contactSearchButtonClick" prefHeight="28.0" prefWidth="66.0" text="Search" textFill="#6a4ba6" />
    </children>
 </AnchorPane>

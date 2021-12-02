@@ -6,12 +6,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.util.Objects;
+
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("../scenes/LogIn.fxml"));
-        primaryStage.setTitle("Contact Management App");
+        // Create the main scene that contains the application
+        Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../scenes/HomePage.fxml")));
+        primaryStage.setTitle("Contact Management System");
         primaryStage.setScene(new Scene(root, 900, 700));
         primaryStage.show();
         primaryStage.setResizable(false);

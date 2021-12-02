@@ -3,6 +3,7 @@ package controllers;
 import app.Alerts;
 import app.ChangeView;
 import app.Database;
+import app.UserSession;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -37,7 +38,7 @@ public class DeleteUserController implements Initializable {
     }
 
 
-    // delete the only user in the system
+    // Delete the only user in the system
     public void deleteUser() throws SQLException, IOException {
 
         String username = usernameTf.getText();
@@ -51,6 +52,7 @@ public class DeleteUserController implements Initializable {
                 db = new Database();
                 conn = db.getConnection();
 
+                // Deleting user
                 String query = "DELETE FROM users WHERE username = ?";
                 PreparedStatement ps = conn.prepareStatement(query);
                 ps.setString(1, username);
@@ -58,13 +60,16 @@ public class DeleteUserController implements Initializable {
 
                 if (rowsAffected == 1) {
 
-                    String deleteContactsQuery = "DELETE FROM contacts";
+                    String deleteContactsQuery = "DELETE FROM contacts where username=?";
                     PreparedStatement preparedStatement = conn.prepareStatement(deleteContactsQuery);
+                    preparedStatement.setString(1,username);
                     preparedStatement.executeUpdate();
 
-                    System.out.println("User " + username + "; deleted from system");
+                    System.out.println("DeleteUserController: User " + username + "successfully deleted from system.");
+                    preparedStatement.close();
                     back();
                 }
+
                 ps.close();
                 conn.close();
 
@@ -81,16 +86,16 @@ public class DeleteUserController implements Initializable {
     // check whether it is a valid user
     public boolean validUser() throws SQLException {
 
-        String username = usernameTf.getText();
-        String password = passwordPf.getText();
+        String enteredUsername = usernameTf.getText();
+        String enteredPassword = passwordPf.getText();
 
         db = new Database();
         conn = db.getConnection();
 
         String sqlQuery = "SELECT username, password from users WHERE username = ? AND password = ?";
         PreparedStatement ps = conn.prepareStatement(sqlQuery);
-        ps.setString(1, username);
-        ps.setString(2, password);
+        ps.setString(1, enteredUsername);
+        ps.setString(2, enteredPassword);
 
         ResultSet rs = ps.executeQuery();
 
@@ -102,13 +107,13 @@ public class DeleteUserController implements Initializable {
         return isValidUser;
     }
 
-    // go back to login screen
+    // Go back to Log In screen
     public void back() throws IOException {
         ChangeView cv = new ChangeView(deleteBtn);
         cv.changeView("LogIn");
     }
 
-    // clear the username and password fields
+    // Clear the Username and Password fields
     private void clearUserNamePasswordFields() {
         usernameTf.clear();
         passwordPf.clear();

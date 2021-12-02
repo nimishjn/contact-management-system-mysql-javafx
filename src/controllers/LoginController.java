@@ -3,6 +3,8 @@ package controllers;
 import app.Alerts;
 import app.ChangeView;
 import app.Database;
+import app.UserSession;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -17,7 +19,7 @@ import java.util.ResourceBundle;
 public class LoginController implements Initializable {
 
     @FXML
-    private Button signUpBtn, logInBtn, delUserBtn;
+    private Button signUpBtn, logInBtn, delUserBtn, loadHomeButton;
     @FXML
     public TextField usernameTf;
     @FXML
@@ -28,29 +30,33 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.out.println("This is LoginController");
+        System.out.println("Login Controller initialized.");
         try {
             setDelUserBtn();
-            disableSignUpBtn();
         } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("Error occurred in LoginController.");
             e.printStackTrace();
         }
     }
 
-    // change view to to signUp view
+    // Change view to signUp view
     public void switchToSignUpView() throws IOException {
-
-        // switch to view 'SignUp', currently program is in view 'LogIn'
         ChangeView switchToView = new ChangeView(signUpBtn);
         switchToView.changeView("SignUp");
     }
 
-    // change view to to Contacts view
+    // Change view to Contacts view
     public void switchToContactsView() throws IOException {
-
-        // switch to view 'Contacts', currently program is in view 'LogIn'
         ChangeView switchToView = new ChangeView(logInBtn);
         switchToView.changeView("Contacts");
+    }
+
+    // Change view to HomePage view
+    public void switchToHomeView() throws IOException {
+        ChangeView switchToView = new ChangeView(loadHomeButton);
+        switchToView.changeView("HomePage");
     }
 
     private void clearUserNamePasswordFields() {
@@ -58,7 +64,6 @@ public class LoginController implements Initializable {
         passwordPf.clear();
     }
 
-    // switch scene to 'Contacts' if user login successful, if not alert to user login is unsuccessful
     public void logIn() throws SQLException, IOException {
 
         Alerts alert = new Alerts();
@@ -66,72 +71,48 @@ public class LoginController implements Initializable {
         String username = usernameTf.getText();
         String password = passwordPf.getText();
 
-        if (username.equals("") && password.equals("")) {
-            alert.showLoginUnsuccessfulMessage();
+        if (username.equals("") || password.equals("")) {
+            alert.showInsufficientInformationMessage();
+        }
+        else { // If the user have entered both username and password
 
-        } else {
+            // Creating DB connection
+            db = new Database();
+            conn = db.getConnection();
 
-            if (username.equals("") || password.equals("")) {
-                alert.showInsufficientInformationMessage();
+            // Creating mySQL Query
+            String sqlQuery = "SELECT username, password from users WHERE username = ? AND password = ?";
+            PreparedStatement ps = conn.prepareStatement(sqlQuery);
+            ps.setString(1, username);
+            ps.setString(2, password);
 
-            } else {    // if both username and password fields is not empty
+            ResultSet rs = ps.executeQuery();
 
-                db = new Database();
-                conn = db.getConnection();
-
-                String sqlQuery = "SELECT username, password from users WHERE username = ? AND password = ?";
-                PreparedStatement ps = conn.prepareStatement(sqlQuery);
-                ps.setString(1, username);
-                ps.setString(2, password);
-
-                ResultSet rs = ps.executeQuery();
-
-                // if sql query is valid then take user to the contact list page, i.e. switch to 'Contacts' view from
-                //                                                                                       'LogIn' view
-                if (rs.next()) {
-                    System.out.println(username + "'s login is successful");
-                    switchToContactsView();
-                } else {
-                    alert.showLoginUnsuccessfulMessage();
-                }
-
-                rs.close();
-                ps.close();
-                conn.close();
+            // If SQL query is valid i.e. the user is valid, then Switch ot Contact View
+            if (rs.next()) {
+                System.out.println("Login successful for " + username + ".");
+                UserSession.setUserName(username);
+                switchToContactsView();
             }
-            clearUserNamePasswordFields();
+            else {
+                alert.showLoginUnsuccessfulMessage();
+            }
+
+            rs.close();
+            ps.close();
+            conn.close();
         }
+        clearUserNamePasswordFields();
     }
 
-    // this is a temporary feature
-    // this method makes the MAX no:of users = 1,
-    // going to make it an multi user application some day.
-    public void disableSignUpBtn() throws SQLException {
-
-        db = new Database();
-        conn = db.getConnection();
-        String query = "select count(username) from users";
-        PreparedStatement ps = conn.prepareStatement(query);
-        ResultSet rs = ps.executeQuery();
-        rs.next();
-        String noOfUsers = rs.getString(1);
-        if (noOfUsers.equals("1")) {
-            signUpBtn.setDisable(true);
-            System.out.println("Sign Up Button is Disabled");
-        }
-        rs.close();
-        ps.close();
-        conn.close();
-    }
-
-    // move to view 'DeleteUser'
+    // Render DeleteUser page
     public void moveToDeleteUserView() throws IOException {
 
       ChangeView cv = new ChangeView(delUserBtn);
       cv.changeView("DeleteUser");
     }
 
-    // set the delUserBtn / "Delete User" Button in the gui as a disabled button
+    // When there are no users in the database, disable 'Delete User' button
     public void setDelUserBtn() throws SQLException {
 
         db = new Database();

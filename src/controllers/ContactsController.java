@@ -3,86 +3,105 @@ package controllers;
 import app.Alerts;
 import app.ChangeView;
 import app.Database;
+import app.UserSession;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class ContactsController implements Initializable {
 
     @FXML
-    private Button signOutBtn, addBtn;
+    private Button signOutBtn, addBtn, ContactSearchBtn;
     @FXML
     private ListView<String> contactList;
     @FXML
-    private Label contactNameLabel, contactNumberLabel;
+    private Label contactNameLabel, contactNumberLabel, usernameLabel;
+    @FXML
+    private TextField ContactSearchText;
 
     private Database db;
     private Connection conn;
 
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        System.out.println("This is ContactsController");
+        System.out.println("ContactsController initialized.");
 
         try {
-            readFromDatabase();
-        } catch (SQLException e) {
+            readFromDatabase("");
+            updateScreenUsername();
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
 
         contactList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-
-                try {
-                    reflectDataOfContactSelected();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+            try {
+                reflectDataOfContactSelected();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         });
     }
 
-    // sign out user and switch view to 'LogIn' from 'SignUp'
-    public void signOut() throws IOException {
-        ChangeView switchView = new ChangeView(signOutBtn);
-        switchView.changeView("LogIn");
-        System.out.println("User signed out");
+    // Search Button Click
+    public void contactSearchButtonClick() {
+        String searchValue = ContactSearchText.getText();
+
+        try {
+            readFromDatabase(searchValue);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    // move to 'AddContact' view in order to add a new contact
+    // Render AddContact Page
     public void changeViewToAddContact() throws IOException {
         ChangeView changeView = new ChangeView(addBtn);
         changeView.changeView("AddContact");
     }
 
-    // loads all contacts to the ListView 'contactList' from the database
-    public void readFromDatabase() throws SQLException {
+    // Update username on top-left
+    public void updateScreenUsername() throws IOException {
+        String username = UserSession.getUserName();
+        usernameLabel.setText("Hello, " + username);
+    }
+
+    // Loads all the contacts from the database
+    public void readFromDatabase(String filter) throws SQLException {
+
+        // Clear the list of contacts
+        contactList.getItems().clear();
 
         String name;
+        String username = UserSession.getUserName();
 
         db = new Database();
         conn = db.getConnection();
 
-        String query = "SELECT name FROM contacts";
+        String query = "SELECT name FROM contacts WHERE username = ?";
 
         PreparedStatement ps = conn.prepareStatement(query);
+        ps.setString(1, username);
         ResultSet rs = ps.executeQuery();
 
         while (rs.next()) {
-
             name = rs.getString(1);
-            contactList.getItems().add(name);
 
+            // Applies the filter when a person wants to search for a contact
+            if(name.toLowerCase().contains(filter.toLowerCase()))
+                contactList.getItems().add(name);
         }
 
         rs.close();
@@ -90,64 +109,72 @@ public class ContactsController implements Initializable {
         conn.close();
     }
 
-    // show name and number of the contact selected in the ListView 'contactList'
+    // Load Name and Phone number of the contact
     public void reflectDataOfContactSelected() throws SQLException {
 
-        /*
-         * The below if block is important to prevent crash when clearing all contacts
-         * Crash would happen if variable 'name' is null, i.e if variable 'name' is not initialized
-         */
         if (contactList.getItems().isEmpty()) {
-            contactNameLabel.setText("-");
-            contactNumberLabel.setText("-");
+            contactNameLabel.setText("N/A");
+            contactNumberLabel.setText("N/A");
             return;
         }
 
-        String name;
-        int number;
+        String name, number;
+        String username = UserSession.getUserName();
 
         name = contactList.getSelectionModel().getSelectedItem();
 
         db = new Database();
         conn = db.getConnection();
 
-        String query = "SELECT number from contacts WHERE name = ?";
+        String query = "SELECT number from contacts WHERE name = ? and username = ?";
         PreparedStatement ps = conn.prepareStatement(query);
         ps.setString(1, name);
+        ps.setString(2, username);
 
         ResultSet rs = ps.executeQuery();
 
-        rs.next(); // make the 1st row the current row
+        rs.next();
 
-        number = rs.getInt(1); // store the contact's number in this variable
-        String RealNumber = Integer.toString(number);   // convert to string
+        number = rs.getString(1); // Stores number
 
         contactNameLabel.setText(name);
-        contactNumberLabel.setText(RealNumber);
+        contactNumberLabel.setText(number);
     }
 
-    // method to clear all contacts
+    // Clear all contacts
     public void clearAllContacts() throws SQLException {
 
-        db = new Database();
-        conn = db.getConnection();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.initModality(Modality.WINDOW_MODAL);
+        alert.setTitle("Clear all");
+        alert.setHeaderText("Clear all");
+        alert.setContentText("Are you sure you want to clear all contacts? If yes, click 'Ok'.");
 
-        String query = "DELETE FROM contacts";
-        Statement st = conn.createStatement();
-        int rowsAffected = st.executeUpdate(query);
+        Optional<ButtonType> result = alert.showAndWait();
 
-        if (rowsAffected > 0) {
-
-            contactList.getItems().clear();
-            System.out.println("Contact list cleared");
-            Alerts alert = new Alerts();
-            alert.showAllContactsDeletedMessage();
+        if(!result.isPresent() || result.get() != ButtonType.OK) {
+            System.out.println("ContactsController: Clear all cancelled.");
         } else {
-            System.out.println("Failed to clear all contacts or maybe you have no contacts");
-        }
+            db = new Database();
+            conn = db.getConnection();
 
-        st.close();
-        conn.close();
+            String query = "DELETE FROM contacts";
+            Statement st = conn.createStatement();
+            int rowsAffected = st.executeUpdate(query);
+
+            if (rowsAffected > 0) {
+
+                contactList.getItems().clear();
+                System.out.println("ContactsController: Contact list cleared.");
+                Alerts alert2 = new Alerts();
+                alert2.showAllContactsDeletedMessage();
+            } else {
+                System.out.println("ContactsController: Failed to clear all contacts or maybe user has no contacts.");
+            }
+
+            st.close();
+            conn.close();
+        }
     }
 
     // Delete contact from the ListView 'contactList'
@@ -157,24 +184,26 @@ public class ContactsController implements Initializable {
         if (contactList.getSelectionModel().getSelectedItem() != null) {
 
             String contactName = contactList.getSelectionModel().getSelectedItem();
+            String username = UserSession.getUserName();
 
             db = new Database();
             conn = db.getConnection();
 
-            String query = "DELETE FROM contacts WHERE name = ?";
+            String query = "DELETE FROM contacts WHERE name = ? and username = ?";
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, contactName);
+            ps.setString(2, username);
 
             int rowsAffected = ps.executeUpdate();
 
             if (rowsAffected != 0) {
                 contactList.getItems().remove(contactName);
-                System.out.println(contactName + " deleted");
+                System.out.println("ContactsController: " + contactName + " deleted.");
             } else {
-                System.out.println("Could not delete contact");
+                System.out.println("ContactsController: Could not delete contact.");
             }
         } else {
-            System.out.println("No contact selected");
+            System.out.println("ContactsController: No contact selected.");
         }
     }
 
@@ -183,7 +212,7 @@ public class ContactsController implements Initializable {
 
         // terminate execution of function if no contact is selected
         if (contactList.getSelectionModel().getSelectedItem() == null) {
-            System.out.println("No contact selected for editing");
+            System.out.println("ContactsController: No contact selected for editing.");
             return;
         }
 
@@ -193,7 +222,7 @@ public class ContactsController implements Initializable {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../scenes/EditContact.fxml"));
         Parent root = loader.load();
 
-        // return the controller of 'EditContacts'
+        // Return the controller of 'EditContacts'
         EditContactController editingController = loader.getController();
         editingController.setTextBoxes(contactName, contactNumber);
 
@@ -204,8 +233,17 @@ public class ContactsController implements Initializable {
         window.show();
     }
 
+    // Render ChangePassword page
     public void moveToChangePasswordView() throws IOException {
         ChangeView cv = new ChangeView(signOutBtn);
         cv.changeView("PasswordChange");
+    }
+
+    // Signout and clear User Session
+    public void signOut() throws IOException {
+        ChangeView switchView = new ChangeView(signOutBtn);
+        UserSession.cleanUserSession();
+        System.out.println("User signed out");
+        switchView.changeView("LogIn");
     }
 }

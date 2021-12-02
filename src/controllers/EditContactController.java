@@ -3,9 +3,13 @@ package controllers;
 import app.Alerts;
 import app.ChangeView;
 import app.Database;
+import app.UserSession;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
@@ -21,6 +25,8 @@ public class EditContactController implements Initializable {
     private Button cancelBtn;
     @FXML
     private TextField newContactName, newContactNumber;
+    @FXML
+    private ComboBox<String> newContactExtension;
 
     private String oldContactName, oldContactNumber;
 
@@ -28,6 +34,9 @@ public class EditContactController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         System.out.println("This is EditContactController");
+
+        ObservableList<String> codes = FXCollections.observableArrayList("+91","+1","+44","+20","+971","+46");
+        newContactExtension.getItems().addAll(codes);
     }
 
     // move to the contacts view when cancel, back, or confirm buttons are clicked
@@ -44,7 +53,8 @@ public class EditContactController implements Initializable {
     public void setTextBoxes(String name, String number) {
 
         newContactName.setText(name);
-        newContactNumber.setText(number);
+        newContactNumber.setText(number.substring(number.indexOf(' ') + 1));
+        newContactExtension.setValue(number.substring(0,number.indexOf(' ') + 1));
 
         /* save the contacts' name and number in the below variables so that it can be used in sql queries
          * since this method runs when the scene loads [i.e. at the start itself when loading the respective .fxml file]
@@ -61,16 +71,19 @@ public class EditContactController implements Initializable {
 
             String newName = newContactName.getText();
             String newNumber = newContactNumber.getText();
-            String query = "UPDATE contacts SET name = ?, number = ? WHERE name = ? and number = ?";
+            String newCountryCode = newContactExtension.getValue();
+            String username = UserSession.getUserName();
+            String query = "UPDATE contacts SET name = ?, number = ? WHERE name = ? and number = ? and username = ?";
 
             Database db = new Database();
             Connection conn = db.getConnection();
 
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, newName);
-            ps.setString(2, newNumber);
+            ps.setString(2, newCountryCode + " " + newNumber);
             ps.setString(3, oldContactName);
             ps.setString(4, oldContactNumber);
+            ps.setString(5, username);
 
             AddContactController number = new AddContactController();
             boolean isNewNumberValid = number.validateNumber(newNumber);

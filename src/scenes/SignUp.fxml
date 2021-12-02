@@ -1,38 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="900.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.SignUpController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="900.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.SignUpController">
    <children>
-      <Button fx:id="signMeUpBtn" layoutX="399.0" layoutY="444.0" mnemonicParsing="false" onAction="#signUp" text="Sign Me Up!" />
-      <Label layoutX="190.0" layoutY="223.0" prefHeight="65.0" prefWidth="151.0" text="Username">
+      <Button fx:id="signMeUpBtn" layoutX="394.0" layoutY="520.0" mnemonicParsing="false" onAction="#signUp" prefHeight="34.0" prefWidth="114.0" style="-fx-background-color: blue;" text="Sign Up" textFill="WHITE">
+         <font>
+            <Font name="Carlito" size="18.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
+      <Label layoutX="291.0" layoutY="269.0" prefHeight="25.0" prefWidth="319.0" text="Username *">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <Label layoutX="190.0" layoutY="271.0" prefHeight="65.0" prefWidth="151.0" text="Password">
+      <Label layoutX="291.0" layoutY="342.0" prefHeight="25.0" prefWidth="319.0" text="Password *">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <Label layoutX="190.0" layoutY="318.0" prefHeight="65.0" prefWidth="158.0" text="Re-type password">
+      <Label layoutX="291.0" layoutY="418.0" prefHeight="25.0" prefWidth="319.0" text="Re-type password *">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <TextField fx:id="usernameTf" layoutX="357.0" layoutY="240.0" />
-      <PasswordField fx:id="passwordPf" layoutX="357.0" layoutY="288.0" />
-      <PasswordField fx:id="reTypePasswordPf" layoutX="357.0" layoutY="335.0" />
-      <Label alignment="CENTER" layoutX="309.0" layoutY="158.0" prefHeight="65.0" prefWidth="283.0" text="Sign Up Form">
+      <TextField fx:id="usernameTf" layoutX="291.0" layoutY="294.0" prefHeight="28.0" prefWidth="319.0" promptText="shelly" />
+      <PasswordField fx:id="passwordPf" layoutX="291.0" layoutY="367.0" prefHeight="28.0" prefWidth="319.0" promptText="☆☆☆☆☆☆☆☆☆" />
+      <PasswordField fx:id="reTypePasswordPf" layoutX="291.0" layoutY="443.0" prefHeight="28.0" prefWidth="319.0" promptText="☆☆☆☆☆☆☆☆☆" />
+      <Label alignment="CENTER" layoutY="158.0" prefHeight="65.0" prefWidth="900.0" text="SignUp Form">
          <font>
-            <Font name="System Bold Italic" size="36.0" />
+            <Font name="System Bold" size="48.0" />
          </font>
       </Label>
-      <Button fx:id="backBtn" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#backToLoginView" text="Back" />
+      <Button fx:id="backBtn" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#backToLoginView" prefHeight="30.0" prefWidth="73.0" style="-fx-background-color: green;" text="Back" textFill="WHITE">
+         <font>
+            <Font size="14.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
    </children>
 </AnchorPane>

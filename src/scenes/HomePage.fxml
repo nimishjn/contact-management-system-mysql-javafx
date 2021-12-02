@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="700.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.HomePage">
+   <children>
+      <Label alignment="CENTER" layoutX="3.0" layoutY="293.0" prefHeight="69.0" prefWidth="894.0" text="Welcome to CMS" wrapText="true">
+         <font>
+            <Font name="System Bold" size="48.0" />
+         </font>
+      </Label>
+      <Button fx:id="homeHogInBtn" layoutX="398.0" layoutY="486.0" mnemonicParsing="false" onAction="#loadLogIn" prefHeight="34.0" prefWidth="105.0" style="-fx-background-color: blue;" text="Continue" textFill="WHITE">
+         <font>
+            <Font name="Carlito" size="18.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
+      <Label alignment="CENTER" layoutX="248.0" layoutY="362.0" prefHeight="114.0" prefWidth="405.0" text="CMS stand for Contact Management Application. Through this application multiple users can store thousands of contacts, search for contact names and also display the contact details." textAlignment="CENTER" wrapText="true">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <ImageView fitHeight="114.0" fitWidth="373.0" layoutX="279.0" layoutY="179.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/landing.png" />
+         </image>
+      </ImageView>
+   </children>
+</AnchorPane>
