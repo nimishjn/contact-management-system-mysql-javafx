@@ -3,7 +3,6 @@ package controllers;
 import app.Alerts;
 import app.ChangeView;
 import app.Database;
-import app.UserSession;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;

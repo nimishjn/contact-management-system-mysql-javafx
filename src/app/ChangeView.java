@@ -1,9 +1,5 @@
 package app;
 
-/*
- * A class which contains a method called changeView to easily switch views/scenes whenever need
- */
-
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;

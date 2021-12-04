@@ -128,7 +128,6 @@ public class PasswordChangeController implements Initializable {
                     "Password Changer",
                     "Please fill all the text fields to continue."
             );
-
         }
     }
 
