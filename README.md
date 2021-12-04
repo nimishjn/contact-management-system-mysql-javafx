@@ -1,59 +1,87 @@
-# contact-management-system-mysql-javafx
+# Contact Management System
 
-### Functionalities up to date :
+This project is basically me learning JavaFx and practicing by adding features to an existing project by [Zaid Careem](https://github.com/zaidcareem).
+
+## Functionalities:
 
 - Sign up
-
-- Login with respective credentials given when signing up
-
+- Login
+- Delete user
 - Change Password
-
 - Add contacts
-
-- Read contacts
-
+- Display contacts
 - Edit contacts
-
 - Delete contacts
+- Delete all contacts
 
-- Delete user profile through password authentication [ this also clears all contacts user has saved so far ]
+## My Configuration
 
-- Then sign up as a new user again
+- IntelliJ IDEA Community - v2021.3
+- SceneBuilder - v17.0.0
+- Java OpenJDK - v17.0.1
+- JavaFX SDK - v17.0.1
+- MySQL - v3+
+- MySQL Connector Java - v8.0.27
+- VM options:
+  ```
+  --module-path <Path to JavaFX Libraries>
+  
+  --add-modules=javafx.graphics, javafx.controls, javafx.media, javafx.base, javafx.web, javafx.swing, javafx.fxml, java.sql
+  
+  -Dprism.verbose=true
+  
+  ```
+- Main class:
+  ```
+  app.Main
+  ```
+- MySQL queries to setup database: ([createDatabase.sql](./sql/createDatabase.sql))
+  ```
+  CREATE DATABASE cms;
 
+  CREATE TABLE cms.users (username varchar(20), password varchar(20));
 
+  CREATE TABLE cms.contacts (name varchar(20), number varchar(15), username varchar(20));
+  ```
 
-### IMPORTANT!
+## Folder structure
 
-1. Set your respective MySQL credentials at ***src\app\Database.java***
-
-2. You should manually  have the ***MySQL Java Connector*** loaded to your project through your IDE
-
-3. Run the 3 simple SQL queries mentioned in any one of the files in the ***sql*** folder ***before running the application for the first time*** 
-
-4. Java version used is 1.8, i.e. ***Java8***
-
-5. If you have forgotten your credentials you can run the below MySQL query and retrieve them
-
-``` sql
-  SELECT * FROM users;
 ```
-
-#### Note :
-
-When adding a new contact, or editing an existing contact;
-
-The value user intends to enter as the contacts' number has a condition  **: it cannot exceed (2^31 - 1)** 
-
-[ in order to prevent data truncation error in the database, refer ___src\controllers\AddContactController.java -> validateNumber(String number)___ ] 
-
-Also, it should be non-negative.
-
-We have a concept of Scenes in JavaFX, and I have used the words *scene* and *view* interchangeably
-
-#### Other :
-
-IDE and other tools used are;
-
-1. IntelliJ Community Edition
-
-2. Scene Builder
+root
+├── sql
+|   └── createDatabase.sql
+|   
+├── src
+|   ├── app
+|   |   ├── Alerts.java
+|   |   ├── ChangeView.java
+|   |   ├── Database.java
+|   |   ├── Main.java
+|   |   └── UserSession.java
+|   |
+|   ├── controllers
+|   |   ├── AddContactController.java
+|   |   ├── ContactsController.java
+|   |   ├── DeleteUserController.java
+|   |   ├── EditContactController.java
+|   |   ├── HomePageController.java
+|   |   ├── LoginController.java
+|   |   ├── PasswordChangeController.java
+|   |   └── SignUpController.java
+|   |
+|   ├── images
+|   |   ├── landing.png
+|   |   └── profile.png
+|   |
+|   └── scenes
+|       ├── AddContact.java
+|       ├── Contacts.java
+|       ├── DeleteUser.java
+|       ├── EditContact.java
+|       ├── HomePage.java
+|       ├── LogIn.java
+|       ├── PasswordChange.java
+|       └── SignUp.java
+|    
+└── (end)
+```
